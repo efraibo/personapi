@@ -21,7 +21,7 @@ public class PersonService {
     private final PersonMapper personMapper = PersonMapper.INSTANCE;
 
     public MessageResponseDto createPerson(PersonDto personDto) {
-        Person savedPerson = personRepository.saveAndFlush(personMapper.toModel(personDto));
+        Person savedPerson = personRepository.save(personMapper.toModel(personDto));
         return createMessageResponse(savedPerson.getId(), "Create person with ID: ");
     }
 
@@ -46,7 +46,7 @@ public class PersonService {
         verifyIfExists(personDto.getId());
 
         Person updatedPerson
-                = personRepository.saveAndFlush(personMapper.toModel(personDto));
+                = personRepository.save(personMapper.toModel(personDto));
         return createMessageResponse(updatedPerson.getId(), "Updated person with ID: ");
     }
 
