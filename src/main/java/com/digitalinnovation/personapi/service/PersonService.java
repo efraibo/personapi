@@ -7,6 +7,9 @@ import com.digitalinnovation.personapi.mapper.PersonMapper;
 import com.digitalinnovation.personapi.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class PersonService {
 
@@ -23,5 +26,10 @@ public class PersonService {
                 .builder()
                 .message("Create personDto with ID: " + savedPerson.getId())
                 .build();
+    }
+
+    public List<PersonDto> listAll() {
+        List<Person> allPeople = personRepository.findAll();
+        return allPeople.stream().map(personMapper::toDto).collect(Collectors.toList());
     }
 }
