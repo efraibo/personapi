@@ -3,11 +3,13 @@ package com.digitalinnovation.personapi.service;
 import com.digitalinnovation.personapi.dto.request.PersonDto;
 import com.digitalinnovation.personapi.dto.response.MessageResponseDto;
 import com.digitalinnovation.personapi.entity.Person;
+import com.digitalinnovation.personapi.exception.PersonNotFoundException;
 import com.digitalinnovation.personapi.mapper.PersonMapper;
 import com.digitalinnovation.personapi.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,5 +33,12 @@ public class PersonService {
     public List<PersonDto> listAll() {
         List<Person> allPeople = personRepository.findAll();
         return allPeople.stream().map(personMapper::toDto).collect(Collectors.toList());
+    }
+
+    public PersonDto findById(Long id) throws PersonNotFoundException {
+        Person person = personRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException(id));
+
+        return personMapper.toDto(person);
     }
 }
