@@ -9,7 +9,6 @@ import com.digitalinnovation.personapi.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,10 +23,7 @@ public class PersonService {
 
     public MessageResponseDto createPerson(PersonDto personDto) {
         Person savedPerson = personRepository.saveAndFlush(personMapper.toModel(personDto));
-        return MessageResponseDto
-                .builder()
-                .message("Create personDto with ID: " + savedPerson.getId())
-                .build();
+        return createMessageResponse(savedPerson.getId(), "Create person with ID: ");
     }
 
     public List<PersonDto> listAll() {
@@ -36,9 +32,34 @@ public class PersonService {
     }
 
     public PersonDto findById(Long id) throws PersonNotFoundException {
-        Person person = personRepository.findById(id)
-                .orElseThrow(() -> new PersonNotFoundException(id));
+        Person person = verifyIfExists(id);
 
         return personMapper.toDto(person);
+    }
+
+    public void deleteById(Long id) throws PersonNotFoundException {
+        verifyIfExists(id);
+
+        personRepository.deleteById(id);
+    }
+
+    public MessageResponseDto updateById(Long id, PersonDto personDto) throws PersonNotFoundException {
+        verifyIfExists(personDto.getId());
+
+        Person updatedPerson
+                = personRepository.saveAndFlush(personMapper.toModel(personDto));
+        return createMessageResponse(updatedPerson.getId(), "Updated person with ID: ");
+    }
+
+    private Person verifyIfExists(Long id) throws PersonNotFoundException {
+        return personRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException(id));
+    }
+
+    private MessageResponseDto createMessageResponse(Long id, String message) {
+        return MessageResponseDto
+                .builder()
+                .message(message + id)
+                .build();
     }
 }
